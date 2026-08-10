@@ -24,7 +24,7 @@
     #password-screen, #blog-screen {
       display: none;
       width: 100%;
-      max-width: 400px;
+      max-width: 500px;
     }
     .card {
       background: rgba(255, 251, 245, 0.9);
@@ -85,10 +85,76 @@
       background: #fbe1c0;
       transform: translateY(-1px);
     }
+
+    /* 博客样式 */
     .blog-title {
       font-size: 2rem;
       font-weight: 400;
       color: #ad7a5c;
+      margin-bottom: 1.5rem;
+    }
+    .post-container {
+      text-align: left;
+      background: #fffbf5;
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border: 1px solid #ffe9d4;
+      min-height: 200px;
+    }
+    .post-header {
+      font-size: 1.3rem;
+      color: #9b6f50;
+      margin-bottom: 1rem;
+      font-weight: 500;
+      border-bottom: 1px dashed #edd6bf;
+      padding-bottom: 0.5rem;
+    }
+    .post-content {
+      color: #5f4a3a;
+      line-height: 1.8;
+      white-space: pre-wrap;
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.2rem;
+    }
+    .comment-section {
+      margin-top: 1.5rem;
+      border-top: 1px dashed #edd6bf;
+      padding-top: 1.2rem;
+    }
+    .comment-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin-bottom: 1rem;
+    }
+    .comment-input-group input {
+      padding: 0.6rem 1rem;
+      border: 1px solid #f0d8bf;
+      border-radius: 1.5rem;
+      background: #fffcf5;
+      outline: none;
+      font-family: inherit;
+    }
+    .error-msg {
+      color: #d4856b;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+    }
+    .comment-display {
+      background: #fff2e6;
+      padding: 1rem;
+      border-radius: 1rem;
+      margin: 1rem 0;
+      font-style: italic;
+      color: #6b4e3d;
+    }
+    .hidden {
+      display: none;
     }
   </style>
 </head>
@@ -106,24 +172,100 @@
     </div>
   </div>
 
-  <!-- 博客主页（空） -->
+  <!-- 博客主页 -->
   <div id="blog-screen">
     <div class="card">
       <h1 class="blog-title">我和limita的博客！</h1>
+
+      <!-- 文章显示区 -->
+      <div class="post-container">
+        <div class="post-header" id="post-title">第一天</div>
+        <div class="post-content" id="post-body"></div>
+
+        <!-- 评论区（仅第一篇文章可见） -->
+        <div id="comment-area" class="comment-section hidden">
+          <!-- 登录查看评论 -->
+          <div id="comment-login">
+            <div style="font-size:0.9rem; color:#b4845c; margin-bottom:0.8rem;">🔒 查看评论请登录</div>
+            <div class="comment-input-group">
+              <input type="text" id="comment-account" placeholder="账号" autocomplete="off">
+              <input type="password" id="comment-password" placeholder="密码">
+            </div>
+            <button class="cute-btn" id="view-comment-btn" style="padding:0.5rem 1.5rem; font-size:0.9rem;">查看评论</button>
+            <div class="error-msg" id="login-error"></div>
+          </div>
+
+          <!-- 评论展示及发表（登录成功后显示） -->
+          <div id="comment-logged" class="hidden">
+            <div class="comment-display">
+              <strong>千：</strong>你是真实的吗？
+            </div>
+            <div class="comment-input-group" style="margin-top:1rem;">
+              <textarea id="new-comment" rows="2" placeholder="写下你的评论..." style="border-radius:1rem; padding:0.6rem; border:1px solid #f0d8bf; background:#fffcf5; resize:none; font-family:inherit;"></textarea>
+            </div>
+            <button class="cute-btn" id="submit-comment-btn" style="padding:0.5rem 1.5rem; font-size:0.9rem;">提交评论</button>
+            <div class="error-msg" id="comment-error"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 导航按钮 -->
+      <div class="nav-buttons">
+        <button class="cute-btn" id="next-post-btn">下一篇文章 →</button>
+      </div>
     </div>
   </div>
 
   <script>
     (function() {
+      // 文章数据
+      const posts = [
+        {
+          title: "第一天",
+          content: "limita！对我们的博客满意吗？\n不满意也不行啦～这可是我花了三天做出来的\n呃，如果你想，对这个网站提点建议，可以在评论区评论！\n网站账号就是你的名字，密码是Good_Night，直接输入就好啦！\n就这样，这就是第一篇文章啦！"
+        },
+        {
+          title: "第二天",
+          content: "今天和limita去了我们常去的那个公园，喷泉边上的长椅还是老样子。\n我买了两支冰淇淋，香草和草莓，你笑着选了草莓。\n如果时间能一直停在这一刻就好了……"
+        },
+        {
+          title: "第三天",
+          content: "不知道为什么，今天醒来时觉得哪里不对。\nlimita说的话，好像在哪里听过，连风的方向都一模一样。\n但我还是好开心，只要能见到你，就算是重复也无所谓。"
+        },
+        {
+          title: "第四天",
+          content: "我听见了，咔嚓、咔嚓……发条的声音。\n我拼命想说出不一样的话，可嘴巴不听使唤。\nlimita，如果你看到这篇，请转动发条，把我拉出去。"
+        }
+      ];
+
+      let currentPostIndex = 0;
+
+      // DOM元素
       const passwordScreen = document.getElementById('password-screen');
       const blogScreen = document.getElementById('blog-screen');
       const monthInput = document.getElementById('month-input');
       const dayInput = document.getElementById('day-input');
       const submitBtn = document.getElementById('submit-password');
+      const postTitle = document.getElementById('post-title');
+      const postBody = document.getElementById('post-body');
+      const nextPostBtn = document.getElementById('next-post-btn');
+      const commentArea = document.getElementById('comment-area');
+      const commentLogin = document.getElementById('comment-login');
+      const commentLogged = document.getElementById('comment-logged');
+      const viewCommentBtn = document.getElementById('view-comment-btn');
+      const submitCommentBtn = document.getElementById('submit-comment-btn');
+      const loginError = document.getElementById('login-error');
+      const commentError = document.getElementById('comment-error');
+      const commentAccount = document.getElementById('comment-account');
+      const commentPassword = document.getElementById('comment-password');
+      const newComment = document.getElementById('new-comment');
 
       const CORRECT_MONTH = 12;
       const CORRECT_DAY = 5;
+      const CORRECT_ACCOUNT = "limita";
+      const CORRECT_PASSWORD = "Good_Night";
 
+      // 密码验证
       function checkSession() {
         if (sessionStorage.getItem('limita_blog_unlocked') === 'true') {
           showBlog();
@@ -141,12 +283,12 @@
         passwordScreen.style.display = 'none';
         blogScreen.style.display = 'block';
         sessionStorage.setItem('limita_blog_unlocked', 'true');
+        renderPost(currentPostIndex);
       }
 
       function validateAndEnter() {
         const monthVal = parseInt(monthInput.value.trim(), 10);
         const dayVal = parseInt(dayInput.value.trim(), 10);
-
         if (isNaN(monthVal) || isNaN(dayVal)) return;
         if (monthVal === CORRECT_MONTH && dayVal === CORRECT_DAY) {
           showBlog();
@@ -161,24 +303,65 @@
       }
 
       submitBtn.addEventListener('click', validateAndEnter);
-
-      monthInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          dayInput.focus();
-        }
+      monthInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); dayInput.focus(); }
       });
-      dayInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          validateAndEnter();
-        }
+      dayInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); validateAndEnter(); }
       });
-
-      monthInput.addEventListener('input', function() {
+      monthInput.addEventListener('input', () => {
         if (monthInput.value.length >= 2) dayInput.focus();
       });
 
+      // 文章渲染与导航
+      function renderPost(index) {
+        const post = posts[index];
+        postTitle.textContent = post.title;
+        postBody.textContent = post.content;
+
+        // 评论区显示控制
+        if (index === 0) {
+          commentArea.classList.remove('hidden');
+          resetCommentUI();
+        } else {
+          commentArea.classList.add('hidden');
+        }
+      }
+
+      function resetCommentUI() {
+        commentLogin.classList.remove('hidden');
+        commentLogged.classList.add('hidden');
+        loginError.textContent = '';
+        commentError.textContent = '';
+        commentAccount.value = '';
+        commentPassword.value = '';
+        newComment.value = '';
+      }
+
+      nextPostBtn.addEventListener('click', () => {
+        currentPostIndex = (currentPostIndex + 1) % posts.length;
+        renderPost(currentPostIndex);
+      });
+
+      // 评论区逻辑
+      viewCommentBtn.addEventListener('click', () => {
+        const account = commentAccount.value.trim();
+        const pwd = commentPassword.value.trim();
+        if (account === CORRECT_ACCOUNT && pwd === CORRECT_PASSWORD) {
+          commentLogin.classList.add('hidden');
+          commentLogged.classList.remove('hidden');
+          loginError.textContent = '';
+        } else {
+          loginError.textContent = '账号或密码错误';
+        }
+      });
+
+      submitCommentBtn.addEventListener('click', () => {
+        commentError.textContent = '未知错误';
+        newComment.value = '';
+      });
+
+      // 初始
       checkSession();
     })();
   </script>
