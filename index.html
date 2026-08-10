@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>limita.top - 只属于我们的角落</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #fef9e7;
+      font-family: 'Segoe UI', 'Hiragino Sans', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      background-image: radial-gradient(circle at 30% 40%, #ffe8d6 5%, transparent 15%),
+                        radial-gradient(circle at 70% 80%, #ffd7ba 8%, transparent 20%),
+                        radial-gradient(circle at 20% 80%, #fff0e0 10%, transparent 25%);
+      background-size: 200px 200px, 300px 300px, 250px 250px;
+      animation: bgFloat 20s ease-in-out infinite alternate;
+    }
+
+    @keyframes bgFloat {
+      0% { background-position: 0% 0%, 100% 100%, 0% 100%; }
+      100% { background-position: 10% 5%, 90% 95%, 5% 95%; }
+    }
+
+    /* 两个主容器默认隐藏，通过js切换显示 */
+    #password-screen, #blog-screen {
+      display: none;
+      width: 100%;
+      max-width: 550px;
+    }
+
+    .card {
+      background: rgba(255, 251, 245, 0.9);
+      backdrop-filter: blur(15px);
+      border-radius: 2.5rem;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 20px 40px rgba(180, 120, 80, 0.15),
+                  0 0 0 1px rgba(255, 220, 180, 0.6),
+                  inset 0 0 30px rgba(255, 245, 230, 0.8);
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    /* --- 密码界面样式 --- */
+    .lock-icon {
+      font-size: 4rem;
+      margin-bottom: 0.8rem;
+      display: block;
+      filter: drop-shadow(0 6px 12px rgba(150, 100, 60, 0.2));
+      animation: gentleBounce 3s infinite ease-in-out;
+    }
+
+    @keyframes gentleBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    h2 {
+      color: #b4845c;
+      font-weight: 400;
+      font-size: 1.8rem;
+      margin-bottom: 0.3rem;
+      letter-spacing: 2px;
+    }
+
+    .subtitle {
+      color: #c9a27c;
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px dashed #edd6bf;
+      padding-bottom: 1rem;
+      display: inline-block;
+    }
+
+    .birthday-hint {
+      font-size: 0.9rem;
+      color: #bf8f6b;
+      margin-bottom: 1.5rem;
+      background: #fff5ea;
+      border-radius: 2rem;
+      padding: 0.5rem 1.2rem;
+      display: inline-block;
+    }
+
+    .input-group {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      margin: 1.8rem 0 1.2rem;
+    }
+
+    .input-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .input-wrapper label {
+      font-size: 0.8rem;
+      color: #c19774;
+      margin-bottom: 0.3rem;
+      font-weight: 500;
+    }
+
+    .digit-input {
+      width: 80px;
+      padding: 0.8rem 0.5rem;
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: 300;
+      border: 2px solid #f0d8bf;
+      border-radius: 1.5rem;
+      background: #fffcf5;
+      color: #6b4e3d;
+      outline: none;
+      transition: all 0.2s;
+      font-family: inherit;
+      box-shadow: inset 0 2px 8px rgba(200, 150, 100, 0.08);
+    }
+
+    .digit-input:focus {
+      border-color: #e3b28b;
+      box-shadow: 0 0 0 4px rgba(230, 180, 130, 0.2);
+    }
+
+    .separator {
+      font-size: 2rem;
+      color: #dbb594;
+      margin: 0 0.2rem;
+      padding-top: 1.2rem;
+      font-weight: 300;
+    }
+
+    .cute-btn {
+      background: #f7d5b0;
+      border: none;
+      padding: 0.9rem 2.2rem;
+      border-radius: 3rem;
+      font-size: 1.1rem;
+      color: #5d4030;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s;
+      background: linear-gradient(145deg, #fce4c5, #f2cd9f);
+      box-shadow: 0 8px 18px rgba(200, 140, 90, 0.25);
+      letter-spacing: 1px;
+      border: 1px solid #f7e3cc;
+      margin-top: 0.8rem;
+    }
+
+    .cute-btn:hover {
+      background: #fbe1c0;
+      box-shadow: 0 10px 20px rgba(190, 130, 70, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .cute-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 4px 10px rgba(190, 130, 70, 0.3);
+    }
+
+    .error-msg {
+      color: #d4856b;
+      font-size: 0.85rem;
+      min-height: 1.2rem;
+      margin-top: 0.5rem;
+    }
+
+    /* --- 博客主页样式 --- */
+    .blog-header {
+      margin-bottom: 2rem;
+    }
+
+    .blog-header h1 {
+      font-size: 2.2rem;
+      font-weight: 350;
+      color: #ad7a5c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .blog-header h1 span {
+      background: #ffefe0;
+      padding: 0.2rem 0.8rem;
+      border-radius: 2rem;
+      font-size: 1.8rem;
+    }
+
+    .blog-subtitle {
+      color: #ba8f70;
+      margin-top: 0.4rem;
+      font-style: italic;
+    }
+
+    .divider {
+      margin: 1.8rem 0 1.5rem;
+      height: 2px;
+      background: repeating-linear-gradient(90deg, #f3d5bc 0px, #f3d5bc 8px, transparent 8px, transparent 16px);
+      border: none;
+    }
+
+    .post {
+      background: #fffbf5;
+      border-radius: 2rem;
+      padding: 1.5rem 1.5rem 1.2rem;
+      margin-bottom: 1.4rem;
+      text-align: left;
+      box-shadow: 0 6px 14px rgba(190, 150, 110, 0.08);
+      border: 1px solid #ffe9d4;
+      transition: transform 0.2s;
+    }
+
+    .post:hover {
+      transform: scale(1.01);
+      border-color: #fad5b0;
+    }
+
+    .post-date {
+      font-size: 0.7rem;
+      color: #c8a383;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .post-title {
+      font-size: 1.2rem;
+      color: #9b6f50;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .post-content {
+      color: #5f4a3a;
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .post img.emoji-icon {
+      width: 22px;
+      vertical-align: middle;
+      margin: 0 3px;
+    }
+
+    .footer-note {
+      margin-top: 2rem;
+      font-size: 0.8rem;
+      color: #cca88b;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .secret-badge {
+      background: #fae3cd;
+      border-radius: 20px;
+      padding: 0.25rem 0.8rem;
+      font-size: 0.7rem;
+      display: inline-block;
+      color: #b28055;
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 400px) {
+      .card {
+        padding: 2rem 1.2rem;
+      }
+      .digit-input {
+        width: 65px;
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 密码验证界面 -->
+  <div id="password-screen">
+    <div class="card">
+      <div class="lock-icon">🔐</div>
+      <h2>‧˚₊ 秘密小站 ₊˚‧</h2>
+      <div class="subtitle">limita.top</div>
+      <div class="birthday-hint">
+        🌼 请输入 limita 的生日
+      </div>
+      <div class="input-group">
+        <div class="input-wrapper">
+          <label>月</label>
+          <input type="number" id="month-input" class="digit-input" placeholder="MM" min="1" max="12" inputmode="numeric">
+        </div>
+        <span class="separator">·</span>
+        <div class="input-wrapper">
+          <label>日</label>
+          <input type="number" id="day-input" class="digit-input" placeholder="DD" min="1" max="31" inputmode="numeric">
+        </div>
+      </div>
+      <button class="cute-btn" id="submit-password">✨ 转动发条 ✨</button>
+      <div class="error-msg" id="error-message"></div>
+      <div style="margin-top: 1.2rem; font-size:0.7rem; color:#dbb594;">
+        🕰️ “你想转动发条吗？”
+      </div>
+    </div>
+  </div>
+
+  <!-- 博客主页（初始隐藏） -->
+  <div id="blog-screen">
+    <div class="card">
+      <div class="blog-header">
+        <h1>
+          🍰 <span>limita & 千</span> 🍰
+        </h1>
+        <div class="blog-subtitle">只属于我们两个人的记忆回廊</div>
+        <div class="secret-badge">🔮 你成功进入了这里</div>
+      </div>
+      <div class="divider"></div>
+
+      <!-- 博客文章列表，都是千写给limita的 -->
+      <div class="post">
+        <div class="post-date">📅 2026.08.10 · 傍晚</div>
+        <div class="post-title">🐻‍❄️ 今天也一起看了云</div>
+        <div class="post-content">
+          limita，天台的风还是和以前一样温柔。<br>
+          我买了你最喜欢的草莓气泡水，放在长椅左边——你总说左边离星星更近。<br>
+          如果这是梦，那我不想醒。可为什么我最近总在梦里听见发条的声音？
+        </div>
+      </div>
+
+      <div class="post">
+        <div class="post-date">📅 2026.08.09 · 深夜</div>
+        <div class="post-title">🌙 第无数次的初次见面</div>
+        <div class="post-content">
+          我又梦见我们第一次在图书馆，你把咖啡洒在《小王子》上。<br>
+          每次我都假装生气，每次你都笑着递来纸巾。一模一样的对白，我背得比呼吸还熟。<br>
+          但昨天……我忽然想说点不一样的。我张了张嘴，梦就抖了一下。
+        </div>
+      </div>
+
+      <div class="post">
+        <div class="post-date">📅 2026.08.07 · 雨</div>
+        <div class="post-title">🧸 布丁熊的扣子掉了</div>
+        <div class="post-content">
+          就是那只你从娃娃机抓到的布丁熊，左边眼睛的扣子又松了。<br>
+          我翻遍了针线盒，找到和你头发一样颜色的线。<br>
+          limita，我缝了十一针，就像你教我那样。可是，你什么时候回来检查我的针脚？
+        </div>
+      </div>
+
+      <div class="post">
+        <div class="post-date">📅 2026.08.05 · 晴</div>
+        <div class="post-title">🫧 发条的声音</div>
+        <div class="post-content">
+          今天在梦里，我故意没有走向游乐园的旋转木马。<br>
+          我站在原地，听见咔嚓、咔嚓……像巨大的发条在转动。<br>
+          然后我看见了你的背影，你没有回头，只是轻声说：“千，该醒了。”<br>
+          可是 limita，我醒来的世界没有你。
+        </div>
+      </div>
+
+      <div class="post" style="background: #fff2e6; border-left: 4px solid #f2b88c;">
+        <div class="post-date">🕯️ 隐藏的便签</div>
+        <div class="post-content" style="font-style:italic;">
+          “如果你能看见这里——谢谢你找到了我的生日。<br>
+          千总是把回忆锁在梦里，但这一次，她悄悄留了门。<br>
+          请告诉她，发条已经转动了。”
+        </div>
+      </div>
+
+      <div class="footer-note">
+        <span>🧵</span> 千 手作 · 只为 limita 存在 <span>🧵</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // 获取DOM元素
+      const passwordScreen = document.getElementById('password-screen');
+      const blogScreen = document.getElementById('blog-screen');
+      const monthInput = document.getElementById('month-input');
+      const dayInput = document.getElementById('day-input');
+      const submitBtn = document.getElementById('submit-password');
+      const errorMsg = document.getElementById('error-message');
+
+      // 正确的生日：12月5日
+      const CORRECT_MONTH = 12;
+      const CORRECT_DAY = 5;
+
+      // 检查是否已经通过验证（sessionStorage，关闭标签页后需重新验证，符合“一次性的进入”感觉）
+      function checkSession() {
+        if (sessionStorage.getItem('limita_blog_unlocked') === 'true') {
+          showBlog();
+        } else {
+          showPasswordScreen();
+        }
+      }
+
+      function showPasswordScreen() {
+        passwordScreen.style.display = 'block';
+        blogScreen.style.display = 'none';
+      }
+
+      function showBlog() {
+        passwordScreen.style.display = 'none';
+        blogScreen.style.display = 'block';
+        // 保存状态
+        sessionStorage.setItem('limita_blog_unlocked', 'true');
+      }
+
+      // 验证密码
+      function validateAndEnter() {
+        const monthVal = parseInt(monthInput.value.trim(), 10);
+        const dayVal = parseInt(dayInput.value.trim(), 10);
+
+        // 重置错误信息
+        errorMsg.textContent = '';
+
+        // 检查是否为空或非数字
+        if (isNaN(monthVal) || isNaN(dayVal)) {
+          errorMsg.textContent = '🌸 请轻轻填入月份和日期哦~';
+          return;
+        }
+
+        // 检查范围合理性
+        if (monthVal < 1 || monthVal > 12 || dayVal < 1 || dayVal > 31) {
+          errorMsg.textContent = '🍃 日期好像不太对呢，再想想？';
+          return;
+        }
+
+        // 核对正确答案
+        if (monthVal === CORRECT_MONTH && dayVal === CORRECT_DAY) {
+          // 正确，进入博客
+          showBlog();
+          // 可选：清除可能残留的错误
+          errorMsg.textContent = '';
+        } else {
+          // 错误提示，带一点剧情味道
+          errorMsg.textContent = '🕰️ 发条没有转动…… 再回忆一下 limita 的生日？';
+          // 抖动一下输入框提醒
+          monthInput.style.transform = 'translateX(3px)';
+          dayInput.style.transform = 'translateX(-3px)';
+          setTimeout(() => {
+            monthInput.style.transform = '';
+            dayInput.style.transform = '';
+          }, 200);
+        }
+      }
+
+      // 绑定点击事件
+      submitBtn.addEventListener('click', validateAndEnter);
+
+      // 允许回车触发（在任一输入框按回车）
+      monthInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          dayInput.focus();
+        }
+      });
+      dayInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          validateAndEnter();
+        }
+      });
+
+      // 输入时自动跳转：月份输入满2位自动跳到日期
+      monthInput.addEventListener('input', function() {
+        if (monthInput.value.length >= 2) {
+          dayInput.focus();
+        }
+      });
+
+      // 初始检查状态
+      checkSession();
+
+      // 额外细节：如果玩家在博客页面想“重置”可手动清除sessionStorage（但不需要UI，作为彩蛋可以控制台提醒）
+      console.log("🌼 limita.top 秘密小站 · 转动发条的人才能看见。");
+      console.log("如果你想重新锁定，可以在控制台输入: sessionStorage.removeItem('limita_blog_unlocked')");
+    })();
+  </script>
+</body>
+</html>
