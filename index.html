@@ -18,8 +18,11 @@
       align-items: center;
       min-height: 100vh;
       padding: 20px;
-      background-image: radial-gradient(circle at 30% 40%, #ffe8d6 5%, transparent 15%),
-                        radial-gradient(circle at 70% 80%, #ffd7ba 8%, transparent 20%);
+      transition: background-color 0.5s;
+    }
+    body.day3-theme {
+      background-color: #e0e0e0;
+      background-image: none;
     }
     #password-screen, #blog-screen {
       display: none;
@@ -33,6 +36,10 @@
       padding: 2.5rem 2rem;
       box-shadow: 0 20px 40px rgba(180, 120, 80, 0.15);
       text-align: center;
+      transition: background-color 0.5s;
+    }
+    .day3-theme .card {
+      background: rgba(245, 245, 245, 0.9);
     }
     .prompt {
       color: #b4845c;
@@ -102,6 +109,10 @@
       border: 1px solid #ffe9d4;
       min-height: 200px;
     }
+    .day3-theme .post-container {
+      background: #f9f9f9;
+      border-color: #ddd;
+    }
     .post-header {
       font-size: 1.3rem;
       color: #9b6f50;
@@ -114,6 +125,16 @@
       color: #5f4a3a;
       line-height: 1.8;
       white-space: pre-wrap;
+    }
+    .post-content img {
+      max-width: 100%;
+      border-radius: 1rem;
+      margin: 1rem 0;
+      display: block;
+    }
+    .lost-data {
+      color: #b0a090;
+      font-style: italic;
     }
     .nav-buttons {
       display: flex;
@@ -132,13 +153,18 @@
       gap: 0.8rem;
       margin-bottom: 1rem;
     }
-    .comment-input-group input {
+    .comment-input-group input,
+    .comment-input-group textarea {
       padding: 0.6rem 1rem;
       border: 1px solid #f0d8bf;
       border-radius: 1.5rem;
       background: #fffcf5;
       outline: none;
       font-family: inherit;
+    }
+    .comment-input-group textarea {
+      border-radius: 1rem;
+      resize: none;
     }
     .error-msg {
       color: #d4856b;
@@ -155,6 +181,19 @@
     }
     .hidden {
       display: none;
+    }
+    .number-grid {
+      font-family: monospace;
+      margin-top: 1rem;
+      color: #666;
+      line-height: 1.6;
+    }
+    .exclamation-toggle {
+      display: inline-block;
+      min-width: 0.6em;
+    }
+    .repeating-text {
+      word-break: break-all;
     }
   </style>
 </head>
@@ -184,7 +223,6 @@
 
         <!-- 评论区（仅第一篇文章可见） -->
         <div id="comment-area" class="comment-section hidden">
-          <!-- 登录查看评论 -->
           <div id="comment-login">
             <div style="font-size:0.9rem; color:#b4845c; margin-bottom:0.8rem;">🔒 查看评论请登录</div>
             <div class="comment-input-group">
@@ -195,13 +233,12 @@
             <div class="error-msg" id="login-error"></div>
           </div>
 
-          <!-- 评论展示及发表（登录成功后显示） -->
           <div id="comment-logged" class="hidden">
             <div class="comment-display">
               <strong>千：</strong>你是真实的吗？
             </div>
             <div class="comment-input-group" style="margin-top:1rem;">
-              <textarea id="new-comment" rows="2" placeholder="写下你的评论..." style="border-radius:1rem; padding:0.6rem; border:1px solid #f0d8bf; background:#fffcf5; resize:none; font-family:inherit;"></textarea>
+              <textarea id="new-comment" rows="2" placeholder="写下你的评论..."></textarea>
             </div>
             <button class="cute-btn" id="submit-comment-btn" style="padding:0.5rem 1.5rem; font-size:0.9rem;">提交评论</button>
             <div class="error-msg" id="comment-error"></div>
@@ -222,23 +259,54 @@
       const posts = [
         {
           title: "第一天",
-          content: "limita！对我们的博客满意吗？\n不满意也不行啦～这可是我花了三天做出来的\n呃，如果你想，对这个网站提点建议，可以在评论区评论！\n网站账号就是你的名字，密码是Good_Night，直接输入就好啦！\n就这样，这就是第一篇文章啦！"
+          content: `limita！对我们的博客满意吗？
+不满意也不行啦～这可是我花了三天做出来的
+呃，如果你想，对这个网站提点建议，可以在评论区评论！
+网站账号就是你的名字，密码是<span class="lost-data">&lt;数据丢失&gt;</span>，直接输入就好啦！
+就这样，这就是第一篇文章啦！`,
+          hasComment: true
         },
         {
           title: "第二天",
-          content: "今天和limita去了我们常去的那个公园，喷泉边上的长椅还是老样子。\n我买了两支冰淇淋，香草和草莓，你笑着选了草莓。\n如果时间能一直停在这一刻就好了……"
+          content: `今天和limita去野餐了，树下很凉爽！
+<img src="picnic.png" alt="野餐照片">
+limita还做了两人份的三明治！我很喜欢吃里面的培根哦
+limita，跟你说一个很可怕的事情，就在前几天，我好像做了个噩梦，梦里你在一个黑色的大树下，我怎么叫你，你都不答应，真是吓死我了！
+不过还好，那只是一场梦而已！
+看到你还好好的，我真的很高兴！你能一直当我的朋友吗？`,
+          hasComment: false
         },
         {
           title: "第三天",
-          content: "不知道为什么，今天醒来时觉得哪里不对。\nlimita说的话，好像在哪里听过，连风的方向都一模一样。\n但我还是好开心，只要能见到你，就算是重复也无所谓。"
+          content: `limita今天有点不舒服。
+<img src="real.png" alt="真实照片">
+我问limita怎么了，她说自己感冒了，需要休息几天。
+我给她带了新鲜的水果，但是她说没胃口吃。
+唉，真希望limita早点好起来，这样我们就能再去野餐了<span class="exclamation-toggle" id="toggle-excl">！</span>
+
+晚上我又去看了limita，她的脸色几乎是白色的，我很担心，我又想起我做的那场梦了。
+但是，那不是现实，对吗？那不是现实，对吗？
+limita，求你回答我。
+<span class="repeating-text">我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要我不要</span>
+<div class="number-grid">1 4 7
+1 5 6
+2 5 9
+3 6 7
+3 6 9</div>`,
+          hasComment: false,
+          specialClass: 'day3'
         },
         {
           title: "第四天",
-          content: "我听见了，咔嚓、咔嚓……发条的声音。\n我拼命想说出不一样的话，可嘴巴不听使唤。\nlimita，如果你看到这篇，请转动发条，把我拉出去。"
+          content: `我听见了，咔嚓、咔嚓……发条的声音。
+我拼命想说出不一样的话，可嘴巴不听使唤。
+limita，如果你看到这篇，请转动发条，把我拉出去。`,
+          hasComment: false
         }
       ];
 
       let currentPostIndex = 0;
+      let toggleInterval = null;
 
       // DOM元素
       const passwordScreen = document.getElementById('password-screen');
@@ -259,11 +327,12 @@
       const commentAccount = document.getElementById('comment-account');
       const commentPassword = document.getElementById('comment-password');
       const newComment = document.getElementById('new-comment');
+      const body = document.body;
 
       const CORRECT_MONTH = 12;
       const CORRECT_DAY = 5;
       const CORRECT_ACCOUNT = "limita";
-      const CORRECT_PASSWORD = "Good_Night";
+      const CORRECT_PASSWORD = "Good_Night"; // 虽然显示<数据丢失>，但正确密码仍是它
 
       // 密码验证
       function checkSession() {
@@ -317,14 +386,34 @@
       function renderPost(index) {
         const post = posts[index];
         postTitle.textContent = post.title;
-        postBody.textContent = post.content;
+        postBody.innerHTML = post.content;
 
         // 评论区显示控制
-        if (index === 0) {
+        if (post.hasComment) {
           commentArea.classList.remove('hidden');
           resetCommentUI();
         } else {
           commentArea.classList.add('hidden');
+        }
+
+        // 特殊主题切换
+        if (post.specialClass === 'day3') {
+          body.classList.add('day3-theme');
+        } else {
+          body.classList.remove('day3-theme');
+        }
+
+        // 启动感叹号变换（仅第三天）
+        clearInterval(toggleInterval);
+        if (post.specialClass === 'day3') {
+          const toggleEl = document.getElementById('toggle-excl');
+          if (toggleEl) {
+            let showExcl = true;
+            toggleInterval = setInterval(() => {
+              showExcl = !showExcl;
+              toggleEl.textContent = showExcl ? '！' : '？';
+            }, 700);
+          }
         }
       }
 
@@ -359,6 +448,11 @@
       submitCommentBtn.addEventListener('click', () => {
         commentError.textContent = '未知错误';
         newComment.value = '';
+      });
+
+      // 清理定时器
+      window.addEventListener('beforeunload', () => {
+        clearInterval(toggleInterval);
       });
 
       // 初始
