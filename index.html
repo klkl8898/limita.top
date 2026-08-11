@@ -11,577 +11,350 @@
       box-sizing: border-box;
     }
 
-    @font-face {
-      font-family: 'PixelFont';
-      src: local('SimSun'), local('MS PGothic'), local('Courier New');
-    }
-
     body {
-      background: #1a1028;
-      font-family: 'PixelFont', 'SimSun', 'MS PGothic', 'Courier New', monospace;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
+      background: #ffffff;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50"><path d="M25 2 L28 19 L46 19 L30 30 L35 47 L25 37 L15 47 L20 30 L4 19 L22 19 Z" fill="%23d0c0e0" opacity="0.3"/></svg>');
+      background-size: 50px 50px;
+      font-family: 'Times New Roman', Times, serif;
+      color: #000000;
       padding: 20px;
-      background-image:
-        radial-gradient(ellipse at 50% 0%, rgba(180, 140, 200, 0.25) 0%, transparent 60%),
-        radial-gradient(circle at 20% 80%, rgba(120, 100, 160, 0.2) 0%, transparent 40%),
-        radial-gradient(circle at 80% 30%, rgba(200, 160, 180, 0.2) 0%, transparent 40%),
-        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 4px),
-        repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 4px);
-      background-size: 100% 100%, 100% 100%, 100% 100%, 100% 4px, 4px 100%;
-      image-rendering: pixelated;
-      transition: background-color 0.8s;
       position: relative;
-      overflow-x: hidden;
-    }
-
-    /* 扫描线覆盖 */
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 999;
-      background: repeating-linear-gradient(0deg,
-          transparent,
-          transparent 3px,
-          rgba(0, 0, 0, 0.03) 3px,
-          rgba(0, 0, 0, 0.03) 4px);
-    }
-
-    /* 偶尔闪烁的噪点 */
-    body::after {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 998;
-      background: transparent;
-      animation: noiseFlash 8s infinite;
-    }
-
-    @keyframes noiseFlash {
-      0%, 93%, 95%, 100% { background: transparent; }
-      94% { background: rgba(200, 180, 220, 0.03); }
+      min-height: 100vh;
+      transition: background-color 0.8s;
     }
 
     body.day3-theme {
-      background: #1c1c1e;
-      background-image:
-        radial-gradient(ellipse at 50% 0%, rgba(140, 140, 150, 0.2) 0%, transparent 60%),
-        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.005) 2px, rgba(255,255,255,0.005) 4px);
-      background-size: 100% 100%, 100% 4px;
+      background-color: #e8e8e8;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50"><path d="M25 2 L28 19 L46 19 L30 30 L35 47 L25 37 L15 47 L20 30 L4 19 L22 19 Z" fill="%23a0a0a0" opacity="0.25"/></svg>');
     }
 
-    #password-screen,
-    #blog-screen {
+    /* 古早贴纸 */
+    .sticker {
+      position: fixed;
+      pointer-events: none;
+      font-size: 1.2rem;
+      opacity: 0.7;
+      animation: twinkle 2s infinite;
+      filter: none;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.5; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+    .sticker:nth-child(1) { top: 5%; left: 3%; animation-delay: 0s; }
+    .sticker:nth-child(2) { top: 10%; right: 5%; animation-delay: 0.4s; }
+    .sticker:nth-child(3) { top: 45%; left: 2%; animation-delay: 0.8s; }
+    .sticker:nth-child(4) { top: 70%; right: 4%; animation-delay: 1.2s; }
+    .sticker:nth-child(5) { top: 85%; left: 8%; animation-delay: 1.6s; }
+    .sticker:nth-child(6) { top: 30%; right: 2%; animation-delay: 0.2s; font-size: 1rem; }
+
+    /* 闪烁文字 */
+    blink, .blink {
+      animation: blinker 1s step-start infinite;
+    }
+    @keyframes blinker {
+      50% { opacity: 0; }
+    }
+
+    /* 通用布局 */
+    #password-screen, #blog-screen {
       display: none;
       width: 100%;
-      max-width: 520px;
-      z-index: 1;
+      max-width: 600px;
+      margin: 0 auto;
     }
 
-    /* ===== Windows 98 风格窗口 ===== */
-    .window-frame {
-      background: #c8c0d0;
-      border: 3px solid;
-      border-color: #e8e0f0 #5a4a6a #5a4a6a #e8e0f0;
-      box-shadow:
-        inset 1px 1px 0 0 #f0e8f8,
-        inset -1px -1px 0 0 #6a5a7a,
-        4px 4px 0px rgba(0, 0, 0, 0.35);
-      image-rendering: pixelated;
-    }
-
-    .window-titlebar {
-      background: linear-gradient(90deg, #4a3070, #6a5090, #4a3070);
-      padding: 6px 8px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 2px solid #3a2058;
-      font-size: 0.85rem;
-      color: #f0e0ff;
-      letter-spacing: 1px;
-      text-shadow: 1px 1px 0 #2a1040;
-      font-family: 'PixelFont', 'SimSun', monospace;
-    }
-
-    .window-titlebar .title-text {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .window-titlebar .title-icon {
-      font-size: 1rem;
-      filter: drop-shadow(1px 1px 0 #1a0030);
-    }
-
-    .window-controls {
-      display: flex;
-      gap: 4px;
-    }
-
-    .win-btn {
-      width: 20px;
-      height: 20px;
-      background: #b8a8c8;
-      border: 2px solid;
-      border-color: #e0d0f0 #5a4a6a #5a4a6a #e0d0f0;
-      font-size: 0.65rem;
-      line-height: 16px;
+    /* 密码窗口 - 简单线框 */
+    .window-box {
+      border: 2px solid #666666;
+      background: #ffffff;
+      padding: 15px;
+      margin: 20px auto;
       text-align: center;
-      cursor: default;
-      color: #3a2a4a;
+    }
+    .window-title {
+      font-size: 1rem;
       font-weight: bold;
-      image-rendering: pixelated;
-      box-shadow: inset 1px 1px 0 #d0c0e0;
-    }
-
-    .win-btn:active {
-      border-color: #5a4a6a #e0d0f0 #e0d0f0 #5a4a6a;
-    }
-
-    .window-body {
-      background: #f5eff8;
-      padding: 20px 18px;
       text-align: center;
-      border-top: 1px solid #f8f0ff;
-      position: relative;
+      border-bottom: 1px solid #666666;
+      padding-bottom: 5px;
+      margin-bottom: 15px;
+      letter-spacing: 1px;
     }
 
-    .day3-theme .window-body {
-      background: #e8e5ea;
-    }
-
-    /* ===== 密码界面 ===== */
     .prompt {
-      color: #4a3070;
       font-size: 1rem;
-      margin-bottom: 1.5rem;
-      font-weight: normal;
-      letter-spacing: 2px;
-      text-shadow: 0px 0px 2px rgba(100, 60, 140, 0.2);
-      animation: textFlicker 6s infinite;
-    }
-
-    @keyframes textFlicker {
-      0%, 40%, 44%, 48%, 100% { opacity: 1; }
-      42% { opacity: 0.7; }
-      46% { opacity: 0.9; }
+      margin-bottom: 1.2rem;
+      color: #000000;
     }
 
     .input-group {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
+      gap: 0.3rem;
+      margin-bottom: 1.2rem;
     }
 
     .digit-input {
-      width: 70px;
-      padding: 0.6rem 0.3rem;
+      width: 65px;
+      padding: 4px 2px;
       text-align: center;
-      font-size: 1.5rem;
-      border: 2px solid;
-      border-color: #6a5a7a #d0c0e0 #d0c0e0 #6a5a7a;
-      border-radius: 2px;
-      background: #faf5ff;
-      color: #3a2a4a;
-      outline: none;
-      transition: 0.15s;
-      font-family: 'PixelFont', 'SimSun', 'Courier New', monospace;
-      box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.1);
-      image-rendering: pixelated;
+      font-size: 1.3rem;
+      border: 1px solid #666666;
+      background: #fcfcfc;
+      color: #000000;
+      font-family: 'Courier New', monospace;
     }
-
     .digit-input:focus {
-      border-color: #8060a0 #c0a0d0 #c0a0d0 #8060a0;
-      box-shadow: 0 0 0 3px rgba(120, 80, 160, 0.2),
-        inset 1px 1px 3px rgba(0, 0, 0, 0.1);
+      outline: 1px solid #999999;
+      border-color: #333333;
     }
 
     .separator {
-      font-size: 1.6rem;
-      color: #5a4a6a;
-      margin: 0 0.1rem;
-      text-shadow: 0 0 3px rgba(100, 60, 140, 0.3);
+      font-size: 1.3rem;
+      color: #333333;
     }
 
     .cute-btn {
-      background: #c8b8d8;
-      border: 2px solid;
-      border-color: #e0d0f0 #6a5a7a #6a5a7a #e0d0f0;
-      padding: 0.6rem 1.8rem;
-      font-size: 0.95rem;
-      color: #2a1a3a;
+      background: #dddddd;
+      border: 1px outset #999999;
+      padding: 4px 20px;
+      font-size: 0.9rem;
+      color: #000000;
       cursor: pointer;
-      font-family: 'PixelFont', 'SimSun', monospace;
-      letter-spacing: 1px;
-      box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
-      transition: 0.1s;
-      image-rendering: pixelated;
-      position: relative;
+      font-family: 'Times New Roman', serif;
+      letter-spacing: 0.5px;
     }
-
-    .cute-btn:hover {
-      background: #d8c8e8;
-      border-color: #f0e0ff #7a6a8a #7a6a8a #f0e0ff;
-      text-shadow: 0 0 4px rgba(150, 100, 200, 0.4);
-    }
-
     .cute-btn:active {
-      border-color: #6a5a7a #e0d0f0 #e0d0f0 #6a5a7a;
-      box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.2);
+      border-style: inset;
+      background: #cccccc;
     }
 
-    /* ===== 博客主页 ===== */
+    /* 博客主区域 */
     .blog-title {
-      font-size: 1.5rem;
-      font-weight: normal;
-      color: #3a2a50;
-      margin-bottom: 1.2rem;
+      font-size: 1.6rem;
+      font-weight: bold;
+      text-align: center;
+      margin: 20px 0 15px;
       letter-spacing: 2px;
-      text-shadow: 0 0 6px rgba(150, 110, 200, 0.35);
-      animation: titleGlow 4s ease-in-out infinite;
-    }
-
-    @keyframes titleGlow {
-      0%, 100% { text-shadow: 0 0 6px rgba(150, 110, 200, 0.35); }
-      50% { text-shadow: 0 0 12px rgba(180, 140, 220, 0.55), 0 0 20px rgba(160, 120, 200, 0.3); }
+      text-transform: uppercase;
+      border-bottom: 2px solid #666666;
+      display: inline-block;
+      padding-bottom: 5px;
     }
 
     .post-container {
+      border: 1px solid #666666;
+      background: #ffffff;
+      padding: 12px;
+      margin: 15px 0;
       text-align: left;
-      background: #faf7fc;
-      border: 2px solid;
-      border-color: #d0c0e0 #8a7a9a #8a7a9a #d0c0e0;
-      padding: 1.2rem;
-      margin: 1.2rem 0;
-      min-height: 180px;
-      box-shadow: inset 1px 1px 0 #fff,
-        inset -1px -1px 0 #c8b8d8;
-      image-rendering: pixelated;
-      position: relative;
     }
-
     .day3-theme .post-container {
-      background: #ece9ef;
-      border-color: #b0a8b8 #706878 #706878 #b0a8b8;
-    }
-
-    /* 偶尔出现轻微色差偏移 */
-    .post-container::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      background: transparent;
-      animation: chromaticShift 15s infinite;
-    }
-
-    @keyframes chromaticShift {
-      0%, 85%, 100% { background: transparent; }
-      86% { background: rgba(255, 200, 200, 0.015); }
-      87% { background: rgba(200, 200, 255, 0.015); }
-      88% { background: transparent; }
+      background: #f5f5f5;
+      border-color: #888888;
     }
 
     .post-header {
       font-size: 1.1rem;
-      color: #4a3070;
+      font-weight: bold;
       margin-bottom: 0.8rem;
-      font-weight: normal;
-      border-bottom: 2px dotted #c8b8d8;
-      padding-bottom: 0.4rem;
-      letter-spacing: 1px;
-      text-shadow: 0 0 2px rgba(100, 60, 140, 0.2);
+      padding-bottom: 0.3rem;
+      border-bottom: 1px dashed #666666;
+      color: #000000;
     }
 
     .post-content {
-      color: #3a2a45;
-      line-height: 1.8;
+      line-height: 1.6;
       white-space: pre-wrap;
       font-size: 0.9rem;
+      color: #000000;
     }
 
     .post-content img {
       max-width: 100%;
-      border-radius: 2px;
-      margin: 0.8rem 0;
+      border: 1px solid #666666;
+      margin: 8px 0;
       display: block;
-      border: 2px solid;
-      border-color: #c8b8d8 #8a7a9a #8a7a9a #c8b8d8;
-      filter: brightness(0.92) contrast(1.05) saturate(0.85);
-      image-rendering: pixelated;
-      transition: filter 4s;
-    }
-
-    .post-content img:hover {
-      filter: brightness(1) contrast(1.1) saturate(1);
+      filter: grayscale(20%) brightness(0.9);
     }
 
     .lost-data {
-      color: #b0a0b8;
+      color: #888888;
       font-style: italic;
-      text-shadow: 0 0 3px rgba(150, 120, 170, 0.3);
-      animation: lostFade 3s ease-in-out infinite;
-    }
-
-    @keyframes lostFade {
-      0%, 100% { opacity: 0.55; }
-      50% { opacity: 0.85; }
+      opacity: 0.8;
     }
 
     .nav-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 0.8rem;
-      margin-top: 1rem;
+      text-align: center;
+      margin: 15px 0;
+    }
+    .nav-buttons .cute-btn {
+      font-size: 0.9rem;
     }
 
-    /* ===== 评论区 ===== */
+    /* 评论区 */
     .comment-section {
-      margin-top: 1.2rem;
-      border-top: 2px dotted #c8b8d8;
-      padding-top: 1rem;
+      border-top: 1px dashed #666666;
+      margin-top: 12px;
+      padding-top: 10px;
     }
-
     .comment-input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-      margin-bottom: 0.8rem;
+      margin-bottom: 8px;
     }
-
     .comment-input-group input,
     .comment-input-group textarea {
-      padding: 0.5rem 0.8rem;
-      border: 2px solid;
-      border-color: #8a7a9a #d0c0e0 #d0c0e0 #8a7a9a;
-      border-radius: 2px;
-      background: #faf5ff;
-      outline: none;
-      font-family: 'PixelFont', 'SimSun', monospace;
-      font-size: 0.85rem;
-      color: #3a2a4a;
-      box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.06);
+      width: 100%;
+      padding: 3px 6px;
+      border: 1px solid #666666;
+      background: #fcfcfc;
+      font-family: 'Times New Roman', serif;
+      font-size: 0.9rem;
+      margin-top: 4px;
+      color: #000000;
     }
-
     .comment-input-group textarea {
-      resize: none;
+      resize: vertical;
     }
-
     .error-msg {
-      color: #a05060;
+      color: #aa0000;
       font-size: 0.8rem;
-      margin-top: 0.4rem;
-      animation: errorBlink 0.5s ease-in-out 2;
+      margin: 4px 0;
     }
-
-    @keyframes errorBlink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
     .comment-display {
-      background: #f3edf8;
-      padding: 0.8rem 1rem;
-      border: 1px solid #c8b8d8;
-      margin: 0.8rem 0;
+      background: #f8f8f8;
+      border: 1px solid #666666;
+      padding: 6px 10px;
+      margin: 8px 0;
       font-style: italic;
-      color: #4a3a5a;
-      border-radius: 2px;
-      box-shadow: inset 0 0 8px rgba(120, 80, 160, 0.06);
-      position: relative;
     }
-
-    .comment-display::before {
-      content: '▼ ';
-      color: #8a7a9a;
-      font-size: 0.7rem;
-    }
-
     .hidden {
       display: none;
     }
 
     .number-grid {
       font-family: 'Courier New', monospace;
-      margin-top: 0.8rem;
-      color: #7a6a8a;
-      line-height: 1.7;
-      letter-spacing: 2px;
-      font-size: 0.85rem;
+      margin-top: 8px;
+      color: #444444;
+      line-height: 1.6;
+      letter-spacing: 1px;
     }
 
     .exclamation-toggle {
       display: inline-block;
-      min-width: 0.5em;
     }
 
     .repeating-text {
       word-break: break-all;
-      color: #6a5a75;
-      font-size: 0.82rem;
-      line-height: 1.6;
+      color: #555555;
+      font-size: 0.8rem;
+      line-height: 1.4;
       opacity: 0.8;
     }
 
-    /* 星星装饰 */
-    .star {
-      position: fixed;
-      pointer-events: none;
-      z-index: 0;
-      font-size: 0.7rem;
-      opacity: 0.5;
-      animation: starTwinkle 3s ease-in-out infinite;
-      color: #d0c0e8;
-    }
-
-    @keyframes starTwinkle {
-      0%, 100% { opacity: 0.35; }
-      50% { opacity: 0.75; }
-    }
-
-    /* 响应式 */
-    @media (max-width: 450px) {
-      .window-body {
-        padding: 15px 10px;
-      }
-      .digit-input {
-        width: 55px;
-        font-size: 1.3rem;
-      }
-      .blog-title {
-        font-size: 1.2rem;
-      }
+    hr {
+      border: none;
+      border-top: 1px solid #666666;
+      margin: 15px 0;
     }
   </style>
 </head>
 <body>
 
-  <!-- 像素星星装饰 -->
-  <span class="star" style="top:8%;left:10%;animation-delay:0s;">✦</span>
-  <span class="star" style="top:15%;right:12%;animation-delay:0.7s;font-size:0.5rem;">✧</span>
-  <span class="star" style="top:60%;left:6%;animation-delay:1.4s;">✦</span>
-  <span class="star" style="top:75%;right:8%;animation-delay:2.1s;font-size:0.6rem;">✧</span>
-  <span class="star" style="top:35%;left:88%;animation-delay:0.3s;font-size:0.5rem;">·</span>
-  <span class="star" style="top:85%;left:15%;animation-delay:1.8s;">✦</span>
+  <!-- 古早贴纸：闪烁星星、花朵、蝴蝶 -->
+  <div class="sticker">⭐</div>
+  <div class="sticker">🌸</div>
+  <div class="sticker">🦋</div>
+  <div class="sticker">✨</div>
+  <div class="sticker">🌙</div>
+  <div class="sticker">💫</div>
 
   <!-- 密码界面 -->
   <div id="password-screen">
-    <div class="window-frame">
-      <div class="window-titlebar">
-        <span class="title-text">
-          <span class="title-icon">🔐</span> limita.top
-        </span>
-        <div class="window-controls">
-          <span class="win-btn">─</span>
-          <span class="win-btn">□</span>
-          <span class="win-btn">✕</span>
-        </div>
+    <div class="window-box">
+      <div class="window-title">🔐 limita.top</div>
+      <div class="prompt">请输入密码</div>
+      <div class="input-group">
+        <input type="number" id="month-input" class="digit-input" placeholder="月" min="1" max="12" inputmode="numeric">
+        <span class="separator">-</span>
+        <input type="number" id="day-input" class="digit-input" placeholder="日" min="1" max="31" inputmode="numeric">
       </div>
-      <div class="window-body">
-        <div class="prompt">请输入密码</div>
-        <div class="input-group">
-          <input type="number" id="month-input" class="digit-input" placeholder="月" min="1" max="12" inputmode="numeric">
-          <span class="separator">·</span>
-          <input type="number" id="day-input" class="digit-input" placeholder="日" min="1" max="31" inputmode="numeric">
-        </div>
-        <button class="cute-btn" id="submit-password">进入</button>
-      </div>
+      <button class="cute-btn" id="submit-password">进入</button>
+      <div style="margin-top:10px;font-size:0.8rem;color:#666;">(limita的生日)</div>
     </div>
   </div>
 
   <!-- 博客主页 -->
   <div id="blog-screen">
-    <div class="window-frame">
-      <div class="window-titlebar">
-        <span class="title-text">
-          <span class="title-icon">📁</span> 我和limita的博客！
-        </span>
-        <div class="window-controls">
-          <span class="win-btn">─</span>
-          <span class="win-btn">□</span>
-          <span class="win-btn">✕</span>
-        </div>
-      </div>
-      <div class="window-body">
-        <div class="post-container">
-          <div class="post-header" id="post-title">第一天</div>
-          <div class="post-content" id="post-body"></div>
+    <div style="text-align:center;">
+      <div class="blog-title">我和limita的博客！</div>
+    </div>
 
-          <!-- 评论区 -->
-          <div id="comment-area" class="comment-section hidden">
-            <div id="comment-login">
-              <div style="font-size:0.85rem; color:#4a3070; margin-bottom:0.6rem;">🔒 查看评论请登录</div>
-              <div class="comment-input-group">
-                <input type="text" id="comment-account" placeholder="账号" autocomplete="off">
-                <input type="password" id="comment-password" placeholder="密码">
-              </div>
-              <button class="cute-btn" id="view-comment-btn" style="padding:0.4rem 1.2rem;font-size:0.8rem;">查看评论</button>
-              <div class="error-msg" id="login-error"></div>
-            </div>
-            <div id="comment-logged" class="hidden">
-              <div class="comment-display">
-                <strong>千：</strong>你是真实的吗？
-              </div>
-              <div class="comment-input-group" style="margin-top:0.8rem;">
-                <textarea id="new-comment" rows="2" placeholder="写下你的评论..."></textarea>
-              </div>
-              <button class="cute-btn" id="submit-comment-btn" style="padding:0.4rem 1.2rem;font-size:0.8rem;">提交评论</button>
-              <div class="error-msg" id="comment-error"></div>
-            </div>
+    <div class="post-container">
+      <div class="post-header" id="post-title">第一天</div>
+      <div class="post-content" id="post-body"></div>
+
+      <!-- 评论区 -->
+      <div id="comment-area" class="comment-section hidden">
+        <div id="comment-login">
+          <div style="font-weight:bold;margin-bottom:5px;">🔒 查看评论 (请登录)</div>
+          <div class="comment-input-group">
+            <input type="text" id="comment-account" placeholder="账号" autocomplete="off">
+            <input type="password" id="comment-password" placeholder="密码">
           </div>
+          <button class="cute-btn" id="view-comment-btn">查看评论</button>
+          <div class="error-msg" id="login-error"></div>
         </div>
-
-        <div class="nav-buttons">
-          <button class="cute-btn" id="next-post-btn">下一篇文章 →</button>
-        </div>
-
-        <div style="text-align:center;margin-top:0.6rem;font-size:0.6rem;color:#b0a0b8;">
-          ◆ 2004 - 千的手作博客 ◆
+        <div id="comment-logged" class="hidden">
+          <div class="comment-display">
+            <strong>千：</strong>你是真实的吗？
+          </div>
+          <div class="comment-input-group" style="margin-top:8px;">
+            <textarea id="new-comment" rows="2" placeholder="写下你的评论..."></textarea>
+          </div>
+          <button class="cute-btn" id="submit-comment-btn">提交评论</button>
+          <div class="error-msg" id="comment-error"></div>
         </div>
       </div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="cute-btn" id="next-post-btn">下一篇文章 →</button>
+    </div>
+
+    <hr>
+    <div style="text-align:center;font-size:0.7rem;color:#888888;">
+      ★ 2004 千的手作博客 ★<br>
+      <span class="blink">●</span> 欢迎光临 <span class="blink">●</span>
     </div>
   </div>
 
   <script>
     (function() {
-      const posts = [{
-        title: "第一天",
-        content: `limita！对我们的博客满意吗？
+      const posts = [
+        {
+          title: "第一天",
+          content: `limita！对我们的博客满意吗？
 不满意也不行啦～这可是我花了三天做出来的
 呃，如果你想，对这个网站提点建议，可以在评论区评论！
 网站账号就是你的名字，密码是<span class="lost-data">&lt;数据丢失&gt;</span>，直接输入就好啦！
 就这样，这就是第一篇文章啦！`,
-        hasComment: true
-      }, {
-        title: "第二天",
-        content: `今天和limita去野餐了，树下很凉爽！
+          hasComment: true
+        },
+        {
+          title: "第二天",
+          content: `今天和limita去野餐了，树下很凉爽！
 <img src="picnic.png" alt="野餐照片">
 limita还做了两人份的三明治！我很喜欢吃里面的培根哦
 limita，跟你说一个很可怕的事情，就在前几天，我好像做了个噩梦，梦里你在一个黑色的大树下，我怎么叫你，你都不答应，真是吓死我了！
 不过还好，那只是一场梦而已！
 看到你还好好的，我真的很高兴！你能一直当我的朋友吗？`,
-        hasComment: false
-      }, {
-        title: "第三天",
-        content: `limita今天有点不舒服。
+          hasComment: false
+        },
+        {
+          title: "第三天",
+          content: `limita今天有点不舒服。
 <img src="real.png" alt="真实照片">
 我问limita怎么了，她说自己感冒了，需要休息几天。
 我给她带了新鲜的水果，但是她说没胃口吃。
@@ -596,15 +369,17 @@ limita，求你回答我。
 2 5 9
 3 6 7
 3 6 9</div>`,
-        hasComment: false,
-        specialClass: 'day3'
-      }, {
-        title: "第四天",
-        content: `我听见了，咔嚓、咔嚓……发条的声音。
+          hasComment: false,
+          specialClass: 'day3'
+        },
+        {
+          title: "第四天",
+          content: `我听见了，咔嚓、咔嚓……发条的声音。
 我拼命想说出不一样的话，可嘴巴不听使唤。
 limita，如果你看到这篇，请转动发条，把我拉出去。`,
-        hasComment: false
-      }];
+          hasComment: false
+        }
+      ];
 
       let currentPostIndex = 0;
       let toggleInterval = null;
@@ -661,23 +436,21 @@ limita，如果你看到这篇，请转动发条，把我拉出去。`,
         if (monthVal === CORRECT_MONTH && dayVal === CORRECT_DAY) {
           showBlog();
         } else {
-          monthInput.style.transform = 'translateX(4px)';
-          dayInput.style.transform = 'translateX(-4px)';
+          monthInput.style.borderColor = '#aa0000';
+          dayInput.style.borderColor = '#aa0000';
           setTimeout(() => {
-            monthInput.style.transform = '';
-            dayInput.style.transform = '';
-          }, 180);
+            monthInput.style.borderColor = '#666666';
+            dayInput.style.borderColor = '#666666';
+          }, 300);
         }
       }
 
       submitBtn.addEventListener('click', validateAndEnter);
       monthInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') { e.preventDefault();
-          dayInput.focus(); }
+        if (e.key === 'Enter') { e.preventDefault(); dayInput.focus(); }
       });
       dayInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') { e.preventDefault();
-          validateAndEnter(); }
+        if (e.key === 'Enter') { e.preventDefault(); validateAndEnter(); }
       });
       monthInput.addEventListener('input', () => {
         if (monthInput.value.length >= 2) dayInput.focus();
@@ -701,7 +474,6 @@ limita，如果你看到这篇，请转动发条，把我拉出去。`,
           body.classList.remove('day3-theme');
         }
 
-        // 导航按钮文字
         if (index === posts.length - 1) {
           nextPostBtn.textContent = '← 回到第一章';
         } else {
